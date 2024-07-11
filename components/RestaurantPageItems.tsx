@@ -24,6 +24,7 @@ interface MenuCategory {
 
 interface Restaurant {
   menu: MenuCategory[];
+  slug: string;
 }
 
 const RestaurantPageItems: React.FC<{ restaurant: Restaurant }> = ({
