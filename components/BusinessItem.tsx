@@ -20,10 +20,19 @@ interface Business {
   banner: Banner;
 }
 
+interface Reviews {
+  createdAt: string;
+  email: string;
+  id: string;
+  reviewText: string;
+  star: number;
+  userName: string;
+}
+
 const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
   const [pointOrta, setPointOrta] = useState<number>(0);
   const getReviewPoint = async () => {
-    await GlobalApi.GetReviewItem(business.slug).then((res) => {
+    await GlobalApi.GetReviewItem(business.slug).then((res: Reviews) => {
       let total = 0;
       for (let data of res.reviews) {
         total += data.star;
