@@ -7,7 +7,7 @@ import BusinessItemSkelton from "./layouts/BusinessItemSkelton";
 
 const BusinessList: React.FC = () => {
   const params = useSearchParams();
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>("all");
   const [businessList, setBusinessList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -17,9 +17,9 @@ const BusinessList: React.FC = () => {
     }
   }, [params]);
 
-  const getBusinessList = (category_: string | null) => {
+  const getBusinessList = async (category_: string | null) => {
     if (category_) {
-      GlobalApi.getBusiness(category_).then((res: any) =>
+      await GlobalApi.getBusiness(category_).then((res: any) =>
         setBusinessList(res?.restaurants)
       );
       setLoading(false);
@@ -31,14 +31,14 @@ const BusinessList: React.FC = () => {
   }, [category]);
 
   return (
-    <div className="flex flex-col px-6 md:px-0">
+    <div className="flex flex-col px-6 pl-10 pb:0 md:pb-10 md:px-0">
       <h2 className="tracking-wide pt-2 md:text-2xl text-xl font-bold capitalize">
         Popular {category} Restaurants
       </h2>
       <h3 className="md:text-xl text-gotur-main font-semibold">
         {businessList?.length} Restaurants Found
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mt-4">
         {!loading
           ? businessList?.map((business, index) => (
               <div key={index}>

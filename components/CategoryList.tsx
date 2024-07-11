@@ -70,10 +70,6 @@ const CategoryList = () => {
     }
   };
 
-  /*  if (loading) {
-    return <Loading />;
-  } */
-
   return (
     <div className="px-2 md:mt-10 relative">
       <div
@@ -108,11 +104,11 @@ const CategoryList = () => {
             ))}
       </div>
       <ArrowRightCircle
-        className="hidden md:flex md:absolute  md:-right-4 top-14 bg-gotur-main text-white rounded-full h-8 w-8 cursor-pointer"
+        className="absolute right-4 top-14  bg-gotur-main text-white rounded-full h-8 w-8 cursor-pointer"
         onClick={() => scrollRightHandler()}
       />
       <ArrowLeftCircle
-        className="hidden md:flex md:absolute md:-left-6 top-14 bg-gotur-main text-white rounded-full h-8 w-8 cursor-pointer"
+        className="absolute left-6 top-14 bg-gotur-main text-white rounded-full h-8 w-8 cursor-pointer"
         onClick={() => scrollLeftHandler()}
       />
     </div>

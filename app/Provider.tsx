@@ -13,7 +13,7 @@ const Provider = ({ children }: ProviderProps) => {
     <CartUpdateContext.Provider value={{ updateCart, setUpdateCart }}>
       <div className="">
         <Header />
-        <div className="md:px-44">{children}</div>
+        <div className="lg:px-44 md:px-20">{children}</div>
       </div>
     </CartUpdateContext.Provider>
   );

@@ -2,6 +2,16 @@ import { gql, request } from "graphql-request";
 
 const MASTER_URL: string = process.env.NEXT_PUBLIC_BACKEND_API_URL || "";
 
+const sendRequest = async (query: any) => {
+  try {
+    const result = await request(MASTER_URL, query);
+    return result;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 const getCategory = async () => {
   const query = gql`
     {
@@ -15,13 +25,8 @@ const getCategory = async () => {
       }
     }
   `;
-  try {
-    const result = await request(MASTER_URL, query);
-    return result;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
-  }
+  const result = await sendRequest(query);
+  return result;
 };
 
 const getBusiness = async (category: any) => {
@@ -47,13 +52,8 @@ const getBusiness = async (category: any) => {
       }
     }
   `;
-  try {
-    const result = await request(MASTER_URL, query);
-    return result;
-  } catch (error) {
-    console.error("Error fetching restaurants:", error);
-    throw error;
-  }
+  const result = await sendRequest(query);
+  return result;
 };
 
 const getBusinessDetail = async (businessSlug: string) => {
@@ -95,52 +95,45 @@ const getBusinessDetail = async (businessSlug: string) => {
       }
     }
   `;
-  try {
-    const result = await request(MASTER_URL, query);
-    return result;
-  } catch (error) {
-    console.error("Error fetching restaurants:", error);
-    throw error;
-  }
+  const result = await sendRequest(query);
+  return result;
 };
 
+interface restaurant {
+  slug: string;
+}
 interface dataItem {
   email: string;
   description: string;
   name: string;
   price: number;
+  restaurantSlug: restaurant;
 }
 
 const AddToCart = async (data: dataItem) => {
-  const query =
-    gql`
+  console.log(data);
+
+  const query = gql`
     mutation AddToCart {
-  createUserCart(
-    data: {email: "` +
-    data.email +
-    `", productName: "` +
-    data.name +
-    `", productDescription: "` +
-    data.description +
-    `", price: ` +
-    data.price +
-    `}
-  ) {
-    id
-  }
-  publishManyUserCarts(to: PUBLISHED) {
-    count
-  }
-}   
+      createUserCart(
+        data: {
+          email: "${data.email}",
+          productName: "${data.name}",
+          productDescription: "${data.description}",
+          price: ${data.price},
+          restaurant: { connect: { slug: "${data.restaurantSlug}" } }
+        }
+      ) {
+        id
+      }
+      publishManyUserCarts(to: PUBLISHED) {
+        count
+      }
+    }
   `;
 
-  try {
-    const result = await request(MASTER_URL, query);
-    return result;
-  } catch (error) {
-    console.error("Error fetching restaurants:", error);
-    throw error;
-  }
+  const result = await sendRequest(query);
+  return result;
 };
 
 const GetUserCart = async (email: string) => {
@@ -149,11 +142,114 @@ const GetUserCart = async (email: string) => {
     query GetUserCart {
       userCarts(where: { email: "` +
     email +
+    `" } first:50) {
+         id
+    price
+    productDescription
+    productName
+    restaurant {
+      name
+    }
+  }
+}
+  `;
+  const result = await sendRequest(query);
+  return result;
+};
+
+const DisconnectRestroFromUserCartItem = async (id: string) => {
+  const query =
+    gql`
+    mutation DisconnectRestaurantFromCartItem {
+      updateUserCart(
+        data: { restaurant: { disconnect: true } }
+        where: { id: "` +
+    id +
+    `" }
+      ) {
+        id
+      }
+      publishManyUserCarts(to: PUBLISHED) {
+        count
+      }
+    }
+  `;
+  const result = await sendRequest(query);
+  return result;
+};
+
+const DeleteCartFromItem = async (id: string) => {
+  const query =
+    gql`
+    mutation DeleteCardItem {
+      deleteUserCart(where: { id: "` +
+    id +
     `" }) {
         id
-        price
-        productDescription
-        productName
+      }
+    }
+  `;
+
+  const result = await sendRequest(query);
+  return result;
+};
+
+interface reviewItem {
+  email: string;
+  userName: string;
+  reviewText: string;
+  star: number;
+  restaurantSlug: restaurant;
+}
+
+const PostReview = async (data: reviewItem) => {
+  const query =
+    gql`
+    mutation AddNewReview {
+      createReview(
+        data: {
+          email: "` +
+    data.email +
+    `"
+          reviewText: "` +
+    data.reviewText +
+    `"
+          star: ` +
+    data.star +
+    `
+          userName: "` +
+    data.userName +
+    `"
+          restaurant: { connect: { slug: "` +
+    data.restaurantSlug +
+    `" } }
+        }
+      )
+        {
+      id}
+      publishManyReviews(to: PUBLISHED) {
+    count
+  }
+    }
+  `;
+
+  const result = await sendRequest(query);
+  return result;
+};
+
+const GetReviewItem = async (value: string) => {
+  const query =
+    gql`
+    query GetRestReview {
+      reviews(where: { restaurant: { slug: "` +
+    value +
+    `" } } first:50) {
+        star
+        userName
+        id
+        email
+        createdAt
+    reviewText
       }
     }
   `;
@@ -161,7 +257,7 @@ const GetUserCart = async (email: string) => {
     const result = await request(MASTER_URL, query);
     return result;
   } catch (error) {
-    console.error("Error fetching restaurants:", error);
+    console.error("Error executing query:", error);
     throw error;
   }
 };
@@ -171,4 +267,8 @@ export default {
   getBusinessDetail,
   AddToCart,
   GetUserCart,
+  DisconnectRestroFromUserCartItem,
+  DeleteCartFromItem,
+  PostReview,
+  GetReviewItem,
 };

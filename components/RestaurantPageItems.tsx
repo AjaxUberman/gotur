@@ -45,10 +45,11 @@ const RestaurantPageItems: React.FC<{ restaurant: Restaurant }> = ({
       name: item.name,
       description: item.description,
       price: item.price,
+      restaurantSlug: restaurant.slug,
     };
 
     try {
-      const res = await GlobalApi.AddToCart(data);
+      await GlobalApi.AddToCart(data);
       toast("Item Added to Cart");
       setUpdateCart(!updateCart);
     } catch (error) {
@@ -57,13 +58,13 @@ const RestaurantPageItems: React.FC<{ restaurant: Restaurant }> = ({
     }
   };
   return (
-    <div className="md:px-0 px-10">
+    <div className="md:px-0 px-4 pb-5 lg:pb-20">
       {restaurant?.menu.map((item, index) => (
         <div key={index}>
           <h3 className="font-bold text-2xl pt-4 text-gotur-main mb-2">
             {item.category}
           </h3>
-          <div className="grid md:grid-cols-2">
+          <div className="grid md:grid-cols-2 gap-4">
             {item?.menuItem.map((i, idx) => (
               <div
                 className="border rounded-lg shadow-sm p-4 grid grid-cols-4 relative"
