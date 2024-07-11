@@ -29,13 +29,14 @@ const getCategory = async () => {
   return result;
 };
 
-const getBusiness = async (category: any) => {
-  const query =
-    gql`
+const getBusiness = async (category: string) => {
+  if (category !== undefined) {
+    const query =
+      gql`
     query GetBusiness {
       restaurants(where: { categories_some: { slug: "` +
-    category +
-    `" } } ) {
+      category +
+      `" } } ) {
         slug
         name
         restroType
@@ -52,8 +53,9 @@ const getBusiness = async (category: any) => {
       }
     }
   `;
-  const result = await sendRequest(query);
-  return result;
+    const result = await sendRequest(query);
+    return result;
+  }
 };
 
 const getBusinessDetail = async (businessSlug: string) => {

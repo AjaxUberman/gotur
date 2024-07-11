@@ -29,10 +29,28 @@ const CheckOutPage = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   const getDatas = async () => {
-    await GlobalApi.GetUserCart(user?.primaryEmailAddress?.emailAddress).then(
-      (res: any) => setCartData(res.userCarts)
-    );
-    setLoading(false);
+    if (user?.primaryEmailAddress?.emailAddress) {
+      try {
+        const res = await GlobalApi.GetUserCart(
+          user.primaryEmailAddress.emailAddress
+        );
+        if (Array.isArray(res)) {
+          setCartData(res as CartItems[]);
+        } else {
+          console.error(
+            "Unexpected data format returned from GetUserCart:",
+            res
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching user cart:", error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      console.warn("Email address is undefined or null.");
+      setLoading(false);
+    }
   };
 
   const removeItemFromCart = async (id: string) => {
@@ -43,7 +61,7 @@ const CheckOutPage = () => {
             toast("Item removed");
             setUpdateCart(!updateCart);
             setCartData((prevData) =>
-              prevData.filter((item) => item.id !== id)
+              prevData ? prevData.filter((item) => item.id !== id) : []
             );
           }
         });
