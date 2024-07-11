@@ -20,13 +20,16 @@ interface Business {
   banner: Banner;
 }
 
-interface Reviews {
+interface ReviewsAlt {
   createdAt: string;
   email: string;
   id: string;
   reviewText: string;
   star: number;
   userName: string;
+}
+interface Reviews {
+  reviews: ReviewsAlt[];
 }
 
 const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
@@ -37,7 +40,7 @@ const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
       for (let data of res.reviews) {
         total += data.star;
       }
-      setPointOrta((total / res.reviews.length).toFixed(1));
+      setPointOrta(Number((total / res.reviews.length).toFixed(1)));
     });
   };
   useEffect(() => {
