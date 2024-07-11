@@ -13,6 +13,18 @@ import Reviews from "../Reviews/Reviews";
 import About from "../Reviews/About";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 
+interface ReviewsAlt {
+  createdAt: string;
+  email: string;
+  id: string;
+  reviewText: string;
+  star: number;
+  userName: string;
+}
+interface Reviews {
+  reviews: ReviewsAlt[];
+}
+
 const RestaurantPage = () => {
   const params = useParams();
   const [category, setCategory] = useState<string>("");
@@ -42,23 +54,26 @@ const RestaurantPage = () => {
     }
   };
 
-  const getReviewPoint = async () => {
+  const getReviewPoint = async (slug: string) => {
     try {
-      const res = await GlobalApi.GetReviewItem(datas?.restaurant.slug);
+      const res = await GlobalApi.GetReviewItem(slug);
+      const reviewsData: Reviews = {
+        reviews: res as ReviewsAlt[],
+      };
       let total = 0;
-      for (let data of res.reviews) {
+      for (let data of reviewsData.reviews) {
         total += data.star;
       }
-      setPointOrta((total / res.reviews.length).toFixed(1));
-      setLoading(false);
+      setPointOrta(Number((total / reviewsData.reviews.length).toFixed(1)));
     } catch (error) {
       console.error("Error fetching reviews:", error);
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getReviewPoint();
+    getReviewPoint(datas?.restaurant.slug);
   }, [datas]);
 
   useEffect(() => {
@@ -97,7 +112,7 @@ const RestaurantPage = () => {
                 <div className="flex gap-2 opacity-70">
                   {restaurant?.categories?.length > 0
                     ? restaurant.categories.map(
-                        (category_: string, index: number) => (
+                        (category_: any, index: number) => (
                           <p key={index}>{category_.name}</p>
                         )
                       )

@@ -34,17 +34,23 @@ interface Reviews {
 
 const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
   const [pointOrta, setPointOrta] = useState<number>(0);
-  const getReviewPoint = async () => {
-    await GlobalApi.GetReviewItem(business.slug).then((res: Reviews) => {
+  const getReviewPoint = async (slug: string) => {
+    try {
+      const res = await GlobalApi.GetReviewItem(slug);
+      const reviewsData: Reviews = {
+        reviews: res as ReviewsAlt[],
+      };
       let total = 0;
-      for (let data of res.reviews) {
+      for (let data of reviewsData.reviews) {
         total += data.star;
       }
-      setPointOrta(Number((total / res.reviews.length).toFixed(1)));
-    });
+      setPointOrta(Number((total / reviewsData.reviews.length).toFixed(1)));
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
   };
   useEffect(() => {
-    getReviewPoint();
+    getReviewPoint(business.slug);
   }, [business]);
 
   return (
