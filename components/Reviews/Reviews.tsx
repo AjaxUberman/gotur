@@ -28,7 +28,6 @@ const Reviews: React.FC<ReviewsProps> = ({
 
   const getReviews = async () => {
     const res: any = await GlobalApi.GetReviewItem(slug);
-    console.log(res.reviews);
     setReviewData(res.reviews);
     let total = 0;
     for (let data of res.reviews) {
@@ -87,7 +86,9 @@ const Reviews: React.FC<ReviewsProps> = ({
         reviewData
           .slice()
           .reverse()
-          .map((item, index) => <ReviewsItem item={item} key={index} />)}
+          .map((item: any, index: number) => (
+            <ReviewsItem item={item} key={index} />
+          ))}
     </div>
   );
 };

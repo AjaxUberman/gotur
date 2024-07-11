@@ -15,24 +15,41 @@ import { CartUpdateContext } from "@/app/_context/CartUpdateContext";
 import GlobalApi from "@/app/_utils/GlobalApi";
 import ActiveCartMenu from "./ActiveCartMenu";
 import SearchMenu from "./SearchMenu";
-import Loading from "./Loading";
+
+interface UserCart {
+  id: string;
+  price: number;
+  productDescription: string;
+  productName: string;
+  restaurant: {
+    name: string;
+  };
+}
+
+interface Restaurant {
+  slug: string;
+  name: string;
+  banner: {
+    url: string;
+  };
+}
 
 const Header = () => {
-  const { updateCart } = useContext(CartUpdateContext);
+  const { updateCart } = useContext<any>(CartUpdateContext);
   const { user } = useUser();
-  const [datas, setDatas] = useState<any>({});
+  const [datas, setDatas] = useState<UserCart[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [menuActive, setMenuActive] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [searchMenuInput, setSearchMenuInput] = useState<string>("");
   const [searchMenuActive, setSearchMenuActive] = useState<boolean>(false);
-  const [filteredDatas, setFilteredDatas] = useState();
-  const [restaurantDatas, setRestaurantDatas] = useState();
+  const [filteredDatas, setFilteredDatas] = useState<Restaurant[]>([]);
+  const [restaurantDatas, setRestaurantDatas] = useState<Restaurant[]>([]);
 
   const getUserCart = async () => {
     if (user?.primaryEmailAddress?.emailAddress) {
       await GlobalApi.GetUserCart(user.primaryEmailAddress.emailAddress)
-        .then((res) => {
+        .then((res: any) => {
           if (res.userCarts.length > 0) {
             setDatas(res.userCarts);
             calculateTotalPrice(res.userCarts);
@@ -76,7 +93,7 @@ const Header = () => {
       name: string;
     };
   }
-  const searchHandler = (e) => {
+  const searchHandler = (e: any) => {
     setSearchMenuInput(e.target.value);
     setSearchMenuActive(true);
     if (!e.target.value) {
@@ -85,7 +102,7 @@ const Header = () => {
   };
 
   const getAllItems = async () => {
-    await GlobalApi.getBusiness("all").then((res) => {
+    await GlobalApi.getBusiness("all").then((res: any) => {
       setRestaurantDatas(res.restaurants);
       setLoading(false);
     });

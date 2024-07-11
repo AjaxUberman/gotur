@@ -1,3 +1,14 @@
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 
-export const CartUpdateContext = createContext(null);
+interface CartUpdateContextType {
+  updateCart: boolean;
+  setUpdateCart: Dispatch<SetStateAction<boolean>>;
+}
+
+const defaultValue: CartUpdateContextType = {
+  updateCart: false,
+  setUpdateCart: () => {},
+};
+
+export const CartUpdateContext =
+  createContext<CartUpdateContextType>(defaultValue);

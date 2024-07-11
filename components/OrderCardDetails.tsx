@@ -3,7 +3,11 @@ import React from "react";
 import { FaTurkishLiraSign } from "react-icons/fa6";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 
-const OrderCardDetails = ({ totalPrice }) => {
+interface OrderCardDetailsProps {
+  totalPrice: number;
+}
+
+const OrderCardDetails: React.FC<OrderCardDetailsProps> = ({ totalPrice }) => {
   const router = useRouter();
   return (
     <div className="flex flex-col gap-4 p-10 md:mt-32 lg:p-36 lg:mt-0">
@@ -27,10 +31,16 @@ const OrderCardDetails = ({ totalPrice }) => {
       </div>
       <div className="grid grid-cols-3 gap-10">
         <div className="flex flex-col">
-          <p className="text-sm">End Date: (MM/YY)</p>
+          <p className="text-sm truncate">End Date: </p>
           <div className="grid grid-cols-2 gap-1">
-            <input className="bg-gray-100 w-full h-10 shadow-sm rounded-md pl-4" />
-            <input className="bg-gray-100 w-full h-10 shadow-sm rounded-md pl-4" />
+            <input
+              className="bg-gray-100 w-full h-10 shadow-sm rounded-md md:pl-4"
+              placeholder="MM"
+            />
+            <input
+              className="bg-gray-100 w-full h-10 shadow-sm rounded-md md:pl-4"
+              placeholder="YY"
+            />
           </div>
         </div>
         <div className="flex flex-col col-span-2">

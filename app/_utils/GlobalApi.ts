@@ -35,7 +35,7 @@ const getBusiness = async (category: any) => {
     query GetBusiness {
       restaurants(where: { categories_some: { slug: "` +
     category +
-    `" } }) {
+    `" } } ) {
         slug
         name
         restroType
@@ -62,7 +62,7 @@ const getBusinessDetail = async (businessSlug: string) => {
     query RestaurantDetail {
       restaurant(where: { slug: "` +
     businessSlug +
-    `" }) {
+    `" } ) {
         aboutUs
         address
         banner {
@@ -99,20 +99,15 @@ const getBusinessDetail = async (businessSlug: string) => {
   return result;
 };
 
-interface restaurant {
-  slug: string;
-}
 interface dataItem {
   email: string;
   description: string;
   name: string;
   price: number;
-  restaurantSlug: restaurant;
+  restaurantSlug: string;
 }
 
 const AddToCart = async (data: dataItem) => {
-  console.log(data);
-
   const query = gql`
     mutation AddToCart {
       createUserCart(
@@ -199,7 +194,7 @@ interface reviewItem {
   userName: string;
   reviewText: string;
   star: number;
-  restaurantSlug: restaurant;
+  restaurantSlug: string;
 }
 
 const PostReview = async (data: reviewItem) => {
@@ -253,13 +248,8 @@ const GetReviewItem = async (value: string) => {
       }
     }
   `;
-  try {
-    const result = await request(MASTER_URL, query);
-    return result;
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
+  const result = await sendRequest(query);
+  return result;
 };
 export default {
   getCategory,

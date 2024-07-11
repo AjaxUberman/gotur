@@ -11,8 +11,8 @@ interface AddMenuProps {
 }
 
 interface dataItems {
-  email: string | undefined;
-  userName: string | null;
+  email: string;
+  userName: string;
   star: number;
   reviewText: string;
   restaurantSlug: string;
@@ -29,10 +29,10 @@ const AddMenu: FC<AddMenuProps> = ({
   const { user } = useUser();
 
   const handleSubmit = async () => {
-    if (user && user.primaryEmailAddress?.emailAddress && user.fullName) {
+    if (user && user.primaryEmailAddress?.emailAddress) {
       const data: dataItems = {
         email: user.primaryEmailAddress.emailAddress,
-        userName: user.fullName,
+        userName: user.fullName || "Guest",
         star: rating,
         reviewText: reviewText,
         restaurantSlug: slug,

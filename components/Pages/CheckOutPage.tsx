@@ -64,24 +64,26 @@ const CheckOutPage = () => {
   useEffect(() => {
     const total = calculateTotalPrice();
     setTotalPrice(total);
-  }, [cartData]);
+    user && getDatas();
+  }, [user, updateCart]);
 
-  console.log(totalPrice);
+  console.log(cartData);
 
   if (loading) {
     return <Loading />;
   }
   return (
-    <div className="grid md:grid-cols-3 ">
-      <div className="col-span-2 flex flex-col item">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 overflow-x-hidden">
+      <div className="lg:col-span-2 flex flex-col ">
         <OrderCardDetails totalPrice={totalPrice} />
       </div>
-      <div className="pl-14 my-10 md:mt-36 pb-10 w-[500px] md:w-[300px] lg:w-full h-[400px] scrollbar scrollbar-thumb-gotur-main scrollbar-track-purple-200 overflow-y-auto">
+      <div className="pl-14 my-10 md:mt-36 pb-10 w-[350px]  lg:w-full h-[400px] scrollbar scrollbar-thumb-gotur-main scrollbar-track-purple-200 overflow-y-auto">
         <h3 className="text-gotur-main text-2xl font-bold mb-4">
           {params.name}
         </h3>
         <div className="flex flex-col gap-4 pr-4">
-          {cartData?.length > 0 &&
+          {cartData &&
+            cartData?.length > 0 &&
             cartData.map((item, index) => (
               <div
                 key={index}
