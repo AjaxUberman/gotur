@@ -27,8 +27,13 @@ const AddMenu: FC<AddMenuProps> = ({
   const [rating, setRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
   const { user } = useUser();
+  const [userError, setUserError] = useState<boolean>(false);
 
   const handleSubmit = async () => {
+    if (!user) {
+      alert("You must SignIn before review.");
+      return;
+    }
     if (user && user.primaryEmailAddress?.emailAddress) {
       const data: dataItems = {
         email: user.primaryEmailAddress.emailAddress,
@@ -51,14 +56,15 @@ const AddMenu: FC<AddMenuProps> = ({
         });
     }
   };
-
   return (
     <div className="border z-40 p-5 rounded-lg shadow-md border-gotur-main w-full h-fit mt-4">
       <div className="">
         <Rating setRating={setRating} rating={rating} />
       </div>
       <div className="mt-2">
-        <h5 className="text-xl font-semibold">Your Review:</h5>
+        <h5 className="text-xl font-semibold">
+          {userError ? "You must login" : "Your Review:"}
+        </h5>
         <div className="bg-gray-100 w-full h-40 rounded-md shadow-md mt-2">
           <textarea
             className="w-full p-4 h-full bg-transparent text-start focus:outline-none"

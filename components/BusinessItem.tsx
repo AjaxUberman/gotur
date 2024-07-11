@@ -34,24 +34,23 @@ interface Reviews {
 
 const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
   const [pointOrta, setPointOrta] = useState<number>(0);
-  const getReviewPoint = async (slug: string) => {
+  const getReviewPoint = async () => {
     try {
-      const res = await GlobalApi.GetReviewItem(slug);
-      const reviewsData: Reviews = {
-        reviews: res as ReviewsAlt[],
-      };
+      const res: any = await GlobalApi.GetReviewItem(business.slug);
       let total = 0;
-      for (let data of reviewsData.reviews) {
+      for (let data of res.reviews) {
         total += data.star;
       }
-      setPointOrta(Number((total / reviewsData.reviews.length).toFixed(1)));
+      setPointOrta(Number((total / res.reviews.length).toFixed(1)));
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
   };
   useEffect(() => {
-    getReviewPoint(business.slug);
+    getReviewPoint();
   }, [business]);
+
+  console.log(pointOrta);
 
   return (
     <Link
@@ -67,7 +66,7 @@ const BusinessItem: React.FC<{ business: Business }> = ({ business }) => {
       />
       <div className="pl-2 py-2 flex flex-col gap-1">
         <div className="flex justify-between">
-          <h4 className="font-bold text-xl pl-1 group-hover:tracking-wide transition duration-200 ease-in">
+          <h4 className="font-bold text-xl md:text-lg md:truncate pl-1 group-hover:tracking-wide transition duration-200 ease-in">
             {business.name}
           </h4>
           <div className="flex gap-1 items-center pr-2">

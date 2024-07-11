@@ -39,7 +39,9 @@ const Reviews: React.FC<ReviewsProps> = ({
 
   useEffect(() => {
     setLoading(true);
-    getReviews();
+    setTimeout(() => {
+      getReviews();
+    }, 500);
   }, [addMenu, itemPost]);
 
   if (loading) {

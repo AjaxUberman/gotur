@@ -12,6 +12,8 @@ import { BsStarFill } from "react-icons/bs";
 import Reviews from "../Reviews/Reviews";
 import About from "../Reviews/About";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
+import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface ReviewsAlt {
   createdAt: string;
@@ -21,12 +23,14 @@ interface ReviewsAlt {
   star: number;
   userName: string;
 }
+
 interface Reviews {
   reviews: ReviewsAlt[];
 }
 
 const RestaurantPage = () => {
   const params = useParams();
+  const { user } = useUser();
   const [category, setCategory] = useState<string>("");
   const [datas, setDatas] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,12 +38,21 @@ const RestaurantPage = () => {
   const [pointOrta, setPointOrta] = useState<number>(0);
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 754px)" });
   const router = useRouter();
+  const [userError, setUserError] = useState<boolean>(false);
 
   useEffect(() => {
     if (params) {
       setCategory(params.id as string);
     }
   }, [params]);
+
+  const setMetaData = (title: string) => {
+    document.title = title;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", `Enjoy your meal at ${title}`);
+    }
+  };
 
   const getRestaurantDatas = async (restaurantID: string) => {
     if (restaurantID) {
@@ -56,15 +69,14 @@ const RestaurantPage = () => {
 
   const getReviewPoint = async (slug: string) => {
     try {
-      const res = await GlobalApi.GetReviewItem(slug);
-      const reviewsData: Reviews = {
-        reviews: res as ReviewsAlt[],
-      };
-      let total = 0;
-      for (let data of reviewsData.reviews) {
-        total += data.star;
+      const res: any = await GlobalApi.GetReviewItem(slug);
+      if (res.reviews) {
+        let total = 0;
+        for (let data of res.reviews) {
+          total += data.star;
+        }
+        setPointOrta(Number((total / res.reviews.length).toFixed(1)));
       }
-      setPointOrta(Number((total / reviewsData.reviews.length).toFixed(1)));
     } catch (error) {
       console.error("Error fetching reviews:", error);
     } finally {
@@ -73,14 +85,18 @@ const RestaurantPage = () => {
   };
 
   useEffect(() => {
-    getReviewPoint(datas?.restaurant.slug);
+    setLoading(true);
+    if (datas?.restaurant?.slug) {
+      getReviewPoint(datas.restaurant.slug);
+      setMetaData("Gotur-" + datas.restaurant.name);
+    }
   }, [datas]);
 
   useEffect(() => {
     getRestaurantDatas(category);
   }, [category]);
 
-  if (!datas) {
+  if (loading) {
     return <Loading />;
   }
 
@@ -90,13 +106,25 @@ const RestaurantPage = () => {
   }
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative items-center flex flex-col 2xl:px-60 overflow-x-hidden">
+      {userError && (
+        <div className="absolute flex flex-col gap-2 2xl:gap-4 items-center top-1/2  border border-gotur-main rounded-md shadow-md bg-white z-50 p-4 2xl:p-10 ">
+          <p className="font-semibold text-xl 2xl:text-2xl">
+            You must login before adding items.
+          </p>
+          <Link
+            href={"/sign-in"}
+            className="bg-gotur-main text-gotur-secondary px-4 py-1 rounded-md shadow-sm  hover:scale-110 ease-in transition duration-100"
+          >
+            Sign In
+          </Link>
+        </div>
+      )}
       {restaurant && (
-        <div className="pt-10 md:px-0 pl-4 2xl:px-20 ">
-          <IoArrowBackCircleSharp
-            className="text-gotur-main text-4xl cursor-pointer hover:scale-110 transition ease-in duration-100 mb-2"
-            onClick={() => router.back()}
-          />
+        <div className="pt-10 md:px-0 pl-4 w-full ">
+          <Link href={"/"}>
+            <IoArrowBackCircleSharp className="text-gotur-main text-4xl cursor-pointer hover:scale-110 transition ease-in duration-100 mb-2" />
+          </Link>
           <div className="flex gap-4 border-b pb-4">
             {restaurant?.banner?.url && (
               <Image
@@ -156,10 +184,13 @@ const RestaurantPage = () => {
           </div>
         </div>
       )}
-      <RestaurantPageItems restaurant={restaurant} />
+      <RestaurantPageItems
+        restaurant={restaurant}
+        setUserError={setUserError}
+      />
 
       {selectedMenu === "reviews" && (
-        <div className="absolute top-0 px-10  md:px-10 lg:px-40 py-10 w-full z-40 drop-shadow-lg">
+        <div className="absolute top-0 2xl:left-10 2xl:px-80 px-10  md:px-10 lg:px-40 py-10 w-full z-40 drop-shadow-lg">
           <Reviews
             name={restaurant.name}
             key={restaurant}

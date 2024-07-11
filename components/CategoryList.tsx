@@ -71,7 +71,7 @@ const CategoryList = () => {
   };
 
   return (
-    <div className="px-2 md:mt-10 relative">
+    <div className="px-2  md:mt-10 relative">
       <div
         className="flex gap-4 p-4 overflow-auto scrollbar-hide"
         ref={listRef}

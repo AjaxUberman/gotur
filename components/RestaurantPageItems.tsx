@@ -3,7 +3,7 @@ import { CartUpdateContext } from "@/app/_context/CartUpdateContext";
 import GlobalApi from "@/app/_utils/GlobalApi";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaPlusCircle } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -26,9 +26,14 @@ interface Restaurant {
   menu: MenuCategory[];
   slug: string;
 }
+interface SetIntFace {
+  restaurant: Restaurant;
+  setUserError: React.Dispatch<React.SetStateAction<any>>;
+}
 
-const RestaurantPageItems: React.FC<{ restaurant: Restaurant }> = ({
+const RestaurantPageItems: React.FC<SetIntFace> = ({
   restaurant,
+  setUserError,
 }) => {
   const { user } = useUser();
   const { updateCart, setUpdateCart } = useContext(CartUpdateContext);
@@ -38,6 +43,7 @@ const RestaurantPageItems: React.FC<{ restaurant: Restaurant }> = ({
 
     if (!email) {
       toast("User email is not available");
+      setUserError(true);
       return;
     }
 

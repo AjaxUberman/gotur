@@ -10,7 +10,7 @@ import { MdDeleteForever } from "react-icons/md";
 import OrderCardDetails from "../OrderCardDetails";
 import Loading from "../layouts/Loading";
 
-interface productName {
+interface ProductName {
   name: string;
 }
 interface CartItems {
@@ -18,6 +18,7 @@ interface CartItems {
   price: number;
   productDescription: string;
   productName: string;
+  restaurant: ProductName;
 }
 
 const CheckOutPage = () => {
@@ -31,17 +32,17 @@ const CheckOutPage = () => {
   const getDatas = async () => {
     if (user?.primaryEmailAddress?.emailAddress) {
       try {
-        const res = await GlobalApi.GetUserCart(
-          user.primaryEmailAddress.emailAddress
+        await GlobalApi.GetUserCart(user.primaryEmailAddress.emailAddress).then(
+          (res: any) => {
+            if (res) {
+              setCartData(res.userCarts);
+            } else {
+              console.error(
+                "Unexpected data format returned from GetUserCart:"
+              );
+            }
+          }
         );
-        if (Array.isArray(res)) {
-          setCartData(res as CartItems[]);
-        } else {
-          console.error(
-            "Unexpected data format returned from GetUserCart:",
-            res
-          );
-        }
       } catch (error) {
         console.error("Error fetching user cart:", error);
       } finally {
@@ -91,7 +92,7 @@ const CheckOutPage = () => {
     return <Loading />;
   }
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 overflow-x-hidden">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 2xl:px-24 overflow-x-hidden">
       <div className="lg:col-span-2 flex flex-col ">
         <OrderCardDetails totalPrice={totalPrice} />
       </div>

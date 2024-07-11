@@ -240,13 +240,13 @@ const GetReviewItem = async (value: string) => {
     query GetRestReview {
       reviews(where: { restaurant: { slug: "` +
     value +
-    `" } } first:50) {
+    `" } }, first: 50) {
         star
         userName
         id
         email
         createdAt
-    reviewText
+        reviewText
       }
     }
   `;

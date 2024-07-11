@@ -118,7 +118,7 @@ const Header = () => {
   }, [searchMenuInput]);
 
   return (
-    <div className="flex sm:justify-around gap-9 md:gap-0 md:py-4 items-center bg-gotur-main shadow-md relative">
+    <div className="flex sm:justify-around gap-9 md:gap-0 md:py-4 2xl:px-60 items-center bg-gotur-main shadow-md relative">
       <Link href={"/"} className="flex items-center">
         <Image src={mainLogo} alt="MainLogo" className="w-20 h-20" />
         <h1 className="hidden md:flex text-2xl font-bold text-gotur-secondary">

@@ -4,7 +4,7 @@ import CategoryList from "@/components/CategoryList";
 
 const MainPage = () => {
   return (
-    <div>
+    <div className="2xl:px-60">
       <CategoryList />
       <BusinessList />
     </div>
